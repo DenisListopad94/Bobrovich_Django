@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Catalog{% endblock %}
+{% block content %}
+
+<h3> Products catalog </h3>
+
+<ul>
+    {% for product_key, product_val in products.items %}
+    <li>
+        {{ product_key }}
+        <ul>
+            {% for data_key, data_val in product_val.items %}
+                {% if data_key == "delive" %}
+                <li>
+                    {{data_key}}
+                    <ul>
+                        {% for country in data_val %}
+                        <li>
+                            {{country}}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                {% else %}
+                <li>
+                    {{data_key}} {{data_val}}
+                </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </li>
+    {% endfor %}
+</ul>
+
+{% endblock %}

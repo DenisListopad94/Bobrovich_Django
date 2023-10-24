@@ -1,10 +1,42 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
+PRODUCTS = {
+    "apple": {
+        "cost": 4.24,
+        "count": 1000,
+        "delive": ["Belarus", "Poland", "Russia"]
+    },
+    "orange": {
+        "cost": 7.24,
+        "count": 100,
+        "delive": ["SAR", "Spain", "Portugal"]
+    },
+    "grape": {
+        "cost": 11.33,
+        "count": 1000,
+        "delive": ["Spain", "Turkey", "Italy"]
+    }
+}
+
 
 def index_ecoshop(request):
-    return HttpResponse("Hello, world. You're at the ecoshop index.")
+    return render(request, "index.html")
 
 
 def info_ecoshop(request, address):
-    return HttpResponse(f"Ecoshop on address Prityckogo, {address}.")
+
+    context = {
+        "address": address
+    }
+
+    return render(request, "info.html", context=context)
+
+
+def products_catalog(request):
+
+    context = {
+        "products": PRODUCTS
+    }
+
+    return render(request, "products_catalog.html", context=context)
