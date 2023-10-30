@@ -1,0 +1,141 @@
+4)	Вывести всех поставщиков:
+
+In [21]: vendors = Vendors.objects.all()
+
+In [22]: vendors
+Out[22]: SELECT "ecoshop_vendors"."id",
+       "ecoshop_vendors"."name",
+       "ecoshop_vendors"."foundation_year",
+       "ecoshop_vendors"."country",
+       "ecoshop_vendors"."phone"
+  FROM "ecoshop_vendors"
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Vendors: Milk Ko>, <Vendors: Euroopt>, <Vendors: Magnit>, <Vendors: White and Red>, <Vendors: Good Fruit Ko>, <Vendors: MeatPiece>, <Vendors: Babushkina Krinka>, <Vendo
+rs: Don Sauvignon>, <Vendors: Bacaleatorg>, <Vendors: Bedronka>, <Vendors: Selpo>, <Vendors: Green>, <Vendors: Seafood>, <Vendors: Nordearth>, <Vendors: Light City>, <Vendors: Seni
+orBan>, <Vendors: Agroculture>, <Vendors: Makro>, <Vendors: BananaCity>, <Vendors: Lidl>]>
+
+5)	Вывести все продукты кроме мясных!
+
+In [26]: products = Products.objects.exclude(category="MT")
+
+In [27]: products
+Out[27]: SELECT "ecoshop_products"."id",
+       "ecoshop_products"."name",
+       "ecoshop_products"."description",
+       "ecoshop_products"."price",
+       "ecoshop_products"."amount",
+       "ecoshop_products"."delivery_date",
+       "ecoshop_products"."category"
+  FROM "ecoshop_products"
+ WHERE NOT ("ecoshop_products"."category" = 'MT')
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Products: banana>, <Products: Jameson>, <Products: cheese>, <Products: grape>, <Products: apple>, <Products: orange>, <Products: Kozel>, <Products: dorado>, <Products: 
+potato>, <Products: cucumber>, <Products: cabbage>, <Products: kiwi>, <Products: pineapple>, <Products: pear>, <Products: butter>, <Products: cream>, <Products: milk>, <Products: J
+acobs>, <Products: Lipton>, <Products: Necafe>, '...(remaining elements truncated)...']>
+
+6)	Вывести поставщиков которые уже работают более 20 лет:
+
+In [28]: vendors = Vendors.objects.filter(foundation_year__lt=2003)
+
+In [29]: vendors
+Out[29]: SELECT "ecoshop_vendors"."id",
+       "ecoshop_vendors"."name",
+       "ecoshop_vendors"."foundation_year",
+       "ecoshop_vendors"."country",
+       "ecoshop_vendors"."phone"
+  FROM "ecoshop_vendors"
+ WHERE "ecoshop_vendors"."foundation_year" < 2003
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Vendors: Milk Ko>, <Vendors: Euroopt>, <Vendors: Magnit>, <Vendors: White and Red>, <Vendors: Good Fruit Ko>, <Vendors: MeatPiece>, <Vendors: Babushkina Krinka>, <Vendo
+rs: Don Sauvignon>, <Vendors: Bedronka>, <Vendors: Selpo>, <Vendors: Seafood>, <Vendors: SeniorBan>, <Vendors: Makro>, <Vendors: Lidl>]>
+
+7)	Вывести всех поставщиков название которых начинается на “company” и основаны не более 10 лет назад:
+
+In [36]: vendors = Vendors.objects.filter(foundation_year__gte="2013",name__startswith="company")
+
+In [37]: vendors
+Out[37]: SELECT "ecoshop_vendors"."id",
+       "ecoshop_vendors"."name",
+       "ecoshop_vendors"."foundation_year",
+       "ecoshop_vendors"."country",
+       "ecoshop_vendors"."phone"
+  FROM "ecoshop_vendors"
+ WHERE ("ecoshop_vendors"."foundation_year" >= 2013 AND "ecoshop_vendors"."name" LIKE 'company%' ESCAPE '\')
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet []>
+
+8)	Вывести первых 5 самых молодых компаний поставщиков:
+
+In [38]: vendors = Vendors.objects.all().order_by("-foundation_year")[:5]
+
+In [39]: vendors
+Out[39]: SELECT "ecoshop_vendors"."id",
+       "ecoshop_vendors"."name",
+       "ecoshop_vendors"."foundation_year",
+       "ecoshop_vendors"."country",
+       "ecoshop_vendors"."phone"
+  FROM "ecoshop_vendors"
+ ORDER BY "ecoshop_vendors"."foundation_year" DESC
+ LIMIT 5
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Vendors: BananaCity>, <Vendors: Light City>, <Vendors: Nordearth>, <Vendors: Green>, <Vendors: Agroculture>]>
+
+9)	Вывести все товары  со стоимостью более 15р или количеством менее 150 ед:
+
+In [42]: products = Products.objects.filter(Q(price__gt=15) | Q(amount__lt=150))
+
+In [43]: products
+Out[43]: SELECT "ecoshop_products"."id",
+       "ecoshop_products"."name",
+       "ecoshop_products"."description",
+       "ecoshop_products"."price",
+       "ecoshop_products"."amount",
+       "ecoshop_products"."delivery_date",
+       "ecoshop_products"."category"
+  FROM "ecoshop_products"
+ WHERE ("ecoshop_products"."price" > 15.0 OR "ecoshop_products"."amount" < 150)
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Products: Jameson>, <Products: cheese>, <Products: grape>, <Products: dorado>, <Products: pineapple>, <Products: sausage>, <Products: beef>, <Products: becon>, <Product
+s: Jacobs>, <Products: Lipton>, <Products: Necafe>, <Products: vobla>, <Products: salmon>, <Products: cambala>, <Products: Capitan Morgan>, <Products: Finlandia>, <Products: XO>]> 
+
+10)	Вывести все товары у которых не дефолтное описание:
+
+In [45]: products = Products.objects.exclude(description="perfect product")
+
+In [46]: products
+Out[46]: SELECT "ecoshop_products"."id",
+       "ecoshop_products"."name",
+       "ecoshop_products"."description",
+       "ecoshop_products"."price",
+       "ecoshop_products"."amount",
+       "ecoshop_products"."delivery_date",
+       "ecoshop_products"."category"
+  FROM "ecoshop_products"
+ WHERE NOT ("ecoshop_products"."description" = 'perfect product')
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+<QuerySet [<Products: Kozel>, <Products: dorado>, <Products: potato>, <Products: cucumber>, <Products: cabbage>, <Products: kiwi>, <Products: pineapple>, <Products: pear>, <Product
+s: butter>, <Products: cream>, <Products: milk>, <Products: sausage>, <Products: beef>, <Products: becon>, <Products: Jacobs>, <Products: Lipton>, <Products: Necafe>, <Products: vo
+bla>, <Products: salmon>, <Products: cambala>, '...(remaining elements truncated)...']>
+
+11)	Изменить дату привоза на текущую дату:
+
+In [48]: Products.objects.filter(id=1).update(delivery_date="2023-10-30")
+UPDATE "ecoshop_products"
+   SET "delivery_date" = '2023-10-30'
+ WHERE "ecoshop_products"."id" = 1
+
+Execution time: 0.011714s [Database: default]
+Out[48]: 1
