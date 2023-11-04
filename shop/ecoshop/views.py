@@ -33,6 +33,14 @@ def info_ecoshop(request, address):
     return render(request, "info.html", context=context)
 
 
+def products_ecoshop(request):
+    return render(request, "products.html")
+
+
+def comments_ecoshop(request):
+    return render(request, "comments.html")
+
+
 def products_catalog(request):
 
     context = {

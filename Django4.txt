@@ -1,0 +1,565 @@
+6)	Получить все продукты, принадлежащие определенному поставщику (поставщику с именем "SomeVendor"):
+
+In [1]: vendor = Vendor.objects.get(id=5)
+SELECT "ecoshop_vendor"."id",
+       "ecoshop_vendor"."name",
+       "ecoshop_vendor"."address",
+       "ecoshop_vendor"."email",
+       "ecoshop_vendor"."phone",
+       "ecoshop_vendor"."inn"
+  FROM "ecoshop_vendor"
+ WHERE "ecoshop_vendor"."id" = 5
+ LIMIT 21
+
+Execution time: 0.001995s [Database: default]
+
+In [2]: vendor
+Out[2]: <Vendor: Good Fruit Ko>
+
+In [3]: vendor.product
+Out[3]: <django.db.models.fields.related_descriptors.create_forward_many_to_many_manager.<locals>.ManyRelatedManager at 0x1eea18a42d0>
+
+In [6]: vendor.product.all()
+Out[6]: SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category"
+  FROM "ecoshop_product"
+ INNER JOIN "ecoshop_vendor_product"
+    ON ("ecoshop_product"."id" = "ecoshop_vendor_product"."product_id")
+ WHERE "ecoshop_vendor_product"."vendor_id" = 5
+ LIMIT 21
+
+Execution time: 0.001002s [Database: default]
+<QuerySet [<Product: apple>, <Product: pineapple>, <Product: milk>]>
+
+7)	Получить все отзывы о продуктах для товара, который имеет цену меньше 10:
+
+In [48]: for prod in Product.objects.filter(price__lt=10):
+    ...:     print(prod.name)
+    ...:     for desc in ReviewsProducts.objects.filter(product__name=prod.name):
+    ...:         print(desc.descriptions)
+    ...: 
+SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category"
+  FROM "ecoshop_product"
+ WHERE "ecoshop_product"."price" < 10.0
+
+Execution time: 0.001259s [Database: default]
+banana
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'banana'
+
+Execution time: 0.000998s [Database: default]
+good banana from Equador
+apple
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'apple'
+
+Execution time: 0.000993s [Database: default]
+green apple was sweet and delishes
+orange
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'orange'
+
+Execution time: 0.001002s [Database: default]
+orange old and tasteless
+this orange the biggest then erlier
+Kozel
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'Kozel'
+
+Execution time: 0.000832s [Database: default]
+Very excelent beer Kozel
+Kozel had bitter taste
+Kozel is better beer
+potato
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'potato'
+
+Execution time: 0.000985s [Database: default]
+I needed a lot potato
+cucumber
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'cucumber'
+
+Execution time: 0.000000s [Database: default]
+cabbage
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'cabbage'
+
+Execution time: 0.000581s [Database: default]
+kiwi
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'kiwi'
+
+Execution time: 0.001629s [Database: default]
+this is natural green kiwi
+pear
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'pear'
+
+Execution time: 0.000990s [Database: default]
+butter
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'butter'
+
+Execution time: 0.000000s [Database: default]
+butter from Belarus had good quality
+cream
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'cream'
+
+Execution time: 0.000968s [Database: default]
+milk
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'milk'
+
+Execution time: 0.000618s [Database: default]
+very fresh milk
+becon
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'becon'
+
+Execution time: 0.000000s [Database: default]
+vobla
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_reviewsproducts"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."name" = 'vobla'
+
+Execution time: 0.000000s [Database: default]
+Vobla is better this good beer
+
+8)	Получить все товары, которые имеют обзоры от конкретного автора (например, автора с именем "SomeAuthor"):
+
+In [57]: for rev in ReviewsProducts.objects.filter(author="Mike"):
+    ...:     print(rev.product)
+    ...: 
+SELECT "ecoshop_reviewsproducts"."id",
+       "ecoshop_reviewsproducts"."product_id",
+       "ecoshop_reviewsproducts"."title",
+       "ecoshop_reviewsproducts"."descriptions",
+       "ecoshop_reviewsproducts"."author",
+       "ecoshop_reviewsproducts"."review_time"
+  FROM "ecoshop_reviewsproducts"
+ WHERE "ecoshop_reviewsproducts"."author" = 'Mike'
+
+Execution time: 0.000982s [Database: default]
+SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category"
+  FROM "ecoshop_product"
+ WHERE "ecoshop_product"."id" = 3
+ LIMIT 21
+
+Execution time: 0.000688s [Database: default]
+banana
+SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category"
+  FROM "ecoshop_product"
+ WHERE "ecoshop_product"."id" = 21
+ LIMIT 21
+
+Execution time: 0.001000s [Database: default]
+beef
+SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category"
+  FROM "ecoshop_product"
+ WHERE "ecoshop_product"."id" = 8
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+orange
+
+9)	Вывести всех поставщиков которые поставляли фрукты:
+
+In [59]: Vendor.objects.filter(product__category="FR")
+Out[59]: SELECT "ecoshop_vendor"."id",
+       "ecoshop_vendor"."name",
+       "ecoshop_vendor"."address",
+       "ecoshop_vendor"."email",
+       "ecoshop_vendor"."phone",
+       "ecoshop_vendor"."inn"
+  FROM "ecoshop_vendor"
+ INNER JOIN "ecoshop_vendor_product"
+    ON ("ecoshop_vendor"."id" = "ecoshop_vendor_product"."vendor_id")
+ INNER JOIN "ecoshop_product"
+    ON ("ecoshop_vendor_product"."product_id" = "ecoshop_product"."id")
+ WHERE "ecoshop_product"."category" = 'FR'
+ LIMIT 21
+
+Execution time: 0.002700s [Database: default]
+<QuerySet [<Vendor: Good Fruit Ko>, <Vendor: White and Red>, <Vendor: MeatPiece>, <Vendor: Green>, <Vendor: Babushkina Krinka>, <Vendor: Good Fruit Ko>, <Vendor: Light City>, <Vend
+or: Don Sauvignon>, <Vendor: Agroculture>]>
+
+10)	Вывести покупателей   у которых есть паспорта:
+
+In [69]: for p_num in PassportShipper.objects.all():
+    ...:     print(p_num.shipper)
+    ...: 
+SELECT "ecoshop_passportshipper"."id",
+       "ecoshop_passportshipper"."shipper_id",
+       "ecoshop_passportshipper"."passport_number",
+       "ecoshop_passportshipper"."passport_series"
+  FROM "ecoshop_passportshipper"
+
+Execution time: 0.000691s [Database: default]
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 1
+ LIMIT 21
+
+Execution time: 0.002137s [Database: default]
+Max
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 2
+ LIMIT 21
+
+Execution time: 0.001015s [Database: default]
+Fred
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 3
+ LIMIT 21
+
+Execution time: 0.000994s [Database: default]
+Kate
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 4
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+Tom
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 5
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+Mike
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 6
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+Jane
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 7
+ LIMIT 21
+
+Execution time: 0.000121s [Database: default]
+Bob
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 8
+ LIMIT 21
+
+Execution time: 0.001084s [Database: default]
+John
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 9
+ LIMIT 21
+
+Execution time: 0.000998s [Database: default]
+Angelina
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 10
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+Andy
+
+11)	Вывести всех поставщиков и покупателей с максимальным рейтингом(10):
+
+In [80]: vendors = VendorRating.objects.filter(vendor_rating=10)
+
+
+In [84]: for ven in vendors:
+    ...:     print(ven.vendor.name)
+    ...: 
+SELECT "ecoshop_vendor"."id",
+       "ecoshop_vendor"."name",
+       "ecoshop_vendor"."address",
+       "ecoshop_vendor"."email",
+       "ecoshop_vendor"."phone",
+       "ecoshop_vendor"."inn"
+  FROM "ecoshop_vendor"
+ WHERE "ecoshop_vendor"."id" = 9
+ LIMIT 21
+
+Execution time: 0.000000s [Database: default]
+Bacaleatorg
+
+
+In [86]: shippers = ShipperRating.objects.filter(shipper_rating=10)
+
+In [87]: for ship in shippers:
+    ...:     print(ship.shipper.name)
+    ...: 
+SELECT "ecoshop_shipperrating"."id",
+       "ecoshop_shipperrating"."shipper_id",
+       "ecoshop_shipperrating"."shipper_rating"
+  FROM "ecoshop_shipperrating"
+ WHERE "ecoshop_shipperrating"."shipper_rating" = 10
+
+Execution time: 0.002149s [Database: default]
+SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone"
+  FROM "ecoshop_shipper"
+ WHERE "ecoshop_shipper"."id" = 3
+ LIMIT 21
+
+Execution time: 0.000996s [Database: default]
+Kate
+
+12)	Вывести все продукты у которых нет ни одного комментария:
+
+In [128]: products_without_reviews = Product.objects.annotate(num_reviews=Count('reviewsproducts')).filter(num_reviews=0)
+
+In [129]: products_without_reviews
+Out[129]: SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category",
+       COUNT("ecoshop_reviewsproducts"."id") AS "num_reviews"
+  FROM "ecoshop_product"
+  LEFT OUTER JOIN "ecoshop_reviewsproducts"
+    ON ("ecoshop_product"."id" = "ecoshop_reviewsproducts"."product_id")
+ GROUP BY "ecoshop_product"."id"
+HAVING COUNT("ecoshop_reviewsproducts"."id") = 0
+ LIMIT 21
+
+Execution time: 0.012394s [Database: default]
+<QuerySet [<Product: becon>, <Product: cheese>, <Product: Capitan Morgan>, <Product: grape>, <Product: cabbage>, <Product: sausage>, <Product: cream>, <Product: salmon>, <Product: 
+cambala>, <Product: pear>, <Product: Nesquik>, <Product: cucumber>, <Product: Necafe>]>
+
+
+13)	Вывести покупателей, который покупали более 3 различных продуктов:
+
+In [132]: shippers_with_gt3_products = Shipper.objects.annotate(num_products=Count('product')).filter(num_products__gt=3)
+
+In [133]: shippers_with_gt3_products
+Out[133]: SELECT "ecoshop_shipper"."id",
+       "ecoshop_shipper"."name",
+       "ecoshop_shipper"."address",
+       "ecoshop_shipper"."email",
+       "ecoshop_shipper"."phone",
+       COUNT("ecoshop_shipper_product"."product_id") AS "num_products"
+  FROM "ecoshop_shipper"
+  LEFT OUTER JOIN "ecoshop_shipper_product"
+    ON ("ecoshop_shipper"."id" = "ecoshop_shipper_product"."shipper_id")
+ GROUP BY "ecoshop_shipper"."id"
+HAVING COUNT("ecoshop_shipper_product"."product_id") > 3
+ LIMIT 21
+
+Execution time: 0.008060s [Database: default]
+<QuerySet [<Shipper: Bob>, <Shipper: John>]>
+
+14)	* Получить все продукты, которые имеют больше одного поставщика:
+
+In [135]: products_with_gt1_vendors = Product.objects.annotate(num_vendors=Count('vendor')).filter(num_vendors__gt=1)
+
+In [136]: products_with_gt1_vendors
+Out[136]: SELECT "ecoshop_product"."id",
+       "ecoshop_product"."name",
+       "ecoshop_product"."description",
+       "ecoshop_product"."price",
+       "ecoshop_product"."amount",
+       "ecoshop_product"."delivery_date",
+       "ecoshop_product"."category",
+       COUNT("ecoshop_vendor_product"."vendor_id") AS "num_vendors"
+  FROM "ecoshop_product"
+  LEFT OUTER JOIN "ecoshop_vendor_product"
+    ON ("ecoshop_product"."id" = "ecoshop_vendor_product"."product_id")
+ GROUP BY "ecoshop_product"."id"
+HAVING COUNT("ecoshop_vendor_product"."vendor_id") > 1
+ LIMIT 21
+
+Execution time: 0.001396s [Database: default]
+<QuerySet [<Product: Jameson>, <Product: orange>, <Product: cabbage>, <Product: kiwi>, <Product: pineapple>, <Product: pear>, <Product: butter>]>
+
