@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Shippers_info{% endblock %}
+{% block content %}
+
+<h1> We are in shippers_info page. </h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Shipper</th>
+      <th scope="col">Product</th>
+      <th scope="col">Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for shipper in shippers %}
+    <tr>
+      <td>{{shipper.name}}</td>
+      <td>{% for product in shipper.product.all %}
+            {{product.name}},
+          {% endfor %}
+      </td>
+      <td>{% for description in shipper.shipperreviews_set.all %}
+            {{description.descriptions}},
+          {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from .models import ProductReviews, Vendor, Shipper
 from django.http import HttpResponse
 
 PRODUCTS = {
@@ -38,7 +39,12 @@ def products_ecoshop(request):
 
 
 def comments_ecoshop(request):
-    return render(request, "comments.html")
+    comments = ProductReviews.objects.select_related("product").all
+
+    context = {
+        "comments": comments
+    }
+    return render(request, "comments.html", context=context)
 
 
 def products_catalog(request):
@@ -48,3 +54,23 @@ def products_catalog(request):
     }
 
     return render(request, "products_catalog.html", context=context)
+
+
+def vendors_info_ecoshop(request):
+    vendors = Vendor.objects.prefetch_related("product").all#prefetch_related("vendor__vendorreviews_set").
+
+    context = {
+        "vendors": vendors
+    }
+
+    return render(request, "vendors_info.html", context=context)
+
+
+def shippers_info_ecoshop(request):
+    shippers = Shipper.objects.prefetch_related("product").all#prefetch_related("shipper__shipperreviews_set").
+
+    context = {
+        "shippers": shippers
+    }
+
+    return render(request, "shippers_info.html", context=context)
