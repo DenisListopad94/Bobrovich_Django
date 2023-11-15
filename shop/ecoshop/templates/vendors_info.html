@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Vendors_info{% endblock %}
+{% block content %}
+
+<h1> We are in vendors_info page. </h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">Vendor</th>
+      <th scope="col">Product</th>
+      <th scope="col">Comment</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for vendor in vendors %}
+    <tr>
+      <td>{{vendor.name}}</td>
+      <td>{% for product in vendor.product.all %}
+            {{product.name}},
+          {% endfor %}
+      </td>
+      <td>{% for description in vendor.vendorreviews_set.all %}
+            {{description.descriptions}},
+          {% endfor %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

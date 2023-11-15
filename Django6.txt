@@ -1,0 +1,499 @@
+2)	Получить среднюю цену продукта:
+
+In [3]: avg_price = Product.objects.aggregate(Avg("price"))
+SELECT AVG("ecoshop_product"."price") AS "price__avg"
+  FROM "ecoshop_product"
+
+Execution time: 0.023392s [Database: default]
+
+In [4]: avg_price
+Out[4]: {'price__avg': 0.5103180718529868}
+
+3)	Получить суммарное количество продуктов каждой категории:
+
+In [158]: sum_amount = Product.objects.values("category").annotate(sum_amount = Sum("amount"))
+
+In [159]: for sum_em in sum_amount:
+     ...:     print(sum_em)
+     ...: 
+SELECT "ecoshop_product"."category",
+       SUM("ecoshop_product"."amount") AS "sum_amount"
+  FROM "ecoshop_product"
+ GROUP BY "ecoshop_product"."category"
+
+Execution time: 0.025025s [Database: default]
+{'category': 'AL', 'sum_amount': 234040181}
+{'category': 'FS', 'sum_amount': 229814709}
+{'category': 'ML', 'sum_amount': 235812086}
+{'category': 'MT', 'sum_amount': 234003251}
+{'category': 'FR', 'sum_amount': 234297519}
+{'category': 'TC', 'sum_amount': 233080069}
+{'category': 'VG', 'sum_amount': 234552277}
+
+
+4)	Получить количество отзывов для каждого продукта:
+
+In [156]: count_reviews = Product.objects.values("name").annotate(count_reviews=Count("productreviews")).filter(count_reviews__gte=1)
+
+In [157]: for count_rev in count_reviews:
+     ...:     print(count_rev)
+     ...: 
+SELECT "ecoshop_product"."name",
+       COUNT("ecoshop_productreviews"."id") AS "count_reviews"
+  FROM "ecoshop_product"
+  LEFT OUTER JOIN "ecoshop_productreviews"
+    ON ("ecoshop_product"."id" = "ecoshop_productreviews"."product_id")
+ GROUP BY "ecoshop_product"."name"
+HAVING COUNT("ecoshop_productreviews"."id") >= 1
+
+Execution time: 0.072183s [Database: default]
+{'name': 'Whatever tough.', 'count_reviews': 1}
+{'name': 'cheese', 'count_reviews': 1}
+{'name': 'apple', 'count_reviews': 1}
+{'name': 'potato', 'count_reviews': 1}
+{'name': 'Election fight.', 'count_reviews': 1}
+{'name': 'Blood fact food.', 'count_reviews': 1}
+{'name': 'banana', 'count_reviews': 2}
+{'name': 'Jameson', 'count_reviews': 1}
+{'name': 'orange', 'count_reviews': 1}
+{'name': 'Yes make reach can.', 'count_reviews': 1}
+{'name': 'Spring rather.', 'count_reviews': 1}
+{'name': 'Lipton', 'count_reviews': 1}
+{'name': 'Local wrong bank.', 'count_reviews': 1}
+{'name': 'vobla', 'count_reviews': 1}
+{'name': 'milk', 'count_reviews': 1}
+{'name': 'Least Democrat.', 'count_reviews': 1}
+{'name': 'Could card learn.', 'count_reviews': 1}
+{'name': 'Phone involve.', 'count_reviews': 1}
+{'name': 'Simple a price lay.', 'count_reviews': 1}
+
+5)	Получить общее количество продуктов, у которых цена больше 50:
+
+In [163]: sum_amount = Product.objects.values("name").annotate(Sum("amount")).filter(price__gt=50)
+
+In [164]: for sum_em in sum_amount:
+     ...:     print(sum_em)
+     ...: 
+SELECT "ecoshop_product"."name",
+       SUM("ecoshop_product"."amount") AS "amount__sum"
+  FROM "ecoshop_product"
+ WHERE "ecoshop_product"."price" > 50.0
+ GROUP BY "ecoshop_product"."name"
+
+Execution time: 0.010026s [Database: default]
+{'name': 'Capitan Morgan', 'amount__sum': 200}
+{'name': 'XO', 'amount__sum': 20}
+{'name': 'Jameson', 'amount__sum': 100}
+{'name': 'salmon', 'amount__sum': 150}
+ 
+
+6)	Получить максимальную цену для каждой категории продуктов:
+
+In [137]: max_price = Product.objects.values("category").annotate(max_price=Max("price"))
+
+In [138]: for max_p in max_price:
+     ...:     print(max_p)
+     ...: 
+SELECT "ecoshop_product"."category",
+       MAX("ecoshop_product"."price") AS "max_price"
+  FROM "ecoshop_product"
+ GROUP BY "ecoshop_product"."category"
+
+Execution time: 0.020590s [Database: default]
+{'category': 'AL', 'max_price': 480.0}
+{'category': 'FS', 'max_price': 54.6}
+{'category': 'ML', 'max_price': 11.25}
+{'category': 'MT', 'max_price': 28.6}
+{'category': 'FR', 'max_price': 15.8}
+{'category': 'TC', 'max_price': 27.8}
+{'category': 'VG', 'max_price': 3.8}
+
+
+7)	Получить суммарное количество продуктов и среднюю цену для каждого поставщика:
+
+In [124]: sum_products = Vendor.objects.values("name").annotate(sum_amount=Sum("product__amount"))
+
+In [125]: for sum_prod in sum_products:
+     ...:     print(sum_prod)
+     ...: 
+SELECT "ecoshop_person"."name",
+       SUM("ecoshop_product"."amount") AS "sum_amount"
+  FROM "ecoshop_vendor"
+ INNER JOIN "ecoshop_person"
+    ON ("ecoshop_vendor"."person_ptr_id" = "ecoshop_person"."id")
+  LEFT OUTER JOIN "ecoshop_person_product"
+    ON ("ecoshop_person"."id" = "ecoshop_person_product"."person_id")
+  LEFT OUTER JOIN "ecoshop_product"
+    ON ("ecoshop_person_product"."product_id" = "ecoshop_product"."id")
+ GROUP BY "ecoshop_person"."name"
+
+Execution time: 0.000000s [Database: default]
+{'name': 'To possible describe room I left.', 'sum_amount': 124380}
+{'name': 'Should TV Republican ok.', 'sum_amount': 91879}
+{'name': 'Mission strategy debate she lead.', 'sum_amount': 91831}
+{'name': 'Whole well field east five war final.', 'sum_amount': 32259}
+{'name': 'Trial include article number.', 'sum_amount': 84906}
+{'name': 'Bill help any worker visit.', 'sum_amount': 107778}
+{'name': 'Picture foreign whom hotel success.', 'sum_amount': 73211}
+{'name': 'Citizen research TV too most green.', 'sum_amount': 99122}
+{'name': 'White and Red', 'sum_amount': 1520}
+{'name': 'Finally catch tend.', 'sum_amount': 78820}
+{'name': 'Speak former common finish.', 'sum_amount': 63802}
+{'name': 'MeatPiece', 'sum_amount': 810}
+{'name': 'Myself article management radio.', 'sum_amount': 112730}
+{'name': 'Remain dinner whose.', 'sum_amount': 115083}
+{'name': 'Lead direction change.', 'sum_amount': 159920}
+{'name': 'Cover responsibility play.', 'sum_amount': 154711}
+{'name': 'Woman course court rise.', 'sum_amount': 151751}
+{'name': 'Exist term debate.', 'sum_amount': 67971}
+{'name': 'Consider little begin water when up.', 'sum_amount': 65516}
+{'name': 'Seafood', 'sum_amount': 590}
+{'name': 'Person mission line him far character.', 'sum_amount': 150775}
+{'name': 'Place leader mouth.', 'sum_amount': 103519}
+{'name': 'Training within people minute same.', 'sum_amount': 120770}
+{'name': 'Agree walk what occur central force.', 'sum_amount': 140942}
+{'name': 'Particular any none perform early.', 'sum_amount': 91161}
+{'name': 'Enter glass during.', 'sum_amount': 69295}
+{'name': 'Use point hear she.', 'sum_amount': 139801}
+{'name': 'Glass middle country response of name.', 'sum_amount': 26594}
+{'name': 'Hair leg each per candidate others.', 'sum_amount': 15374}
+{'name': 'Raise allow fish home society hand.', 'sum_amount': 46625}
+{'name': 'Peace yet character west.', 'sum_amount': 27994}
+{'name': 'Air road different price.', 'sum_amount': 37469}
+{'name': 'Magnit', 'sum_amount': 21790}
+{'name': 'Rich much safe discover.', 'sum_amount': 97608}
+{'name': 'According lead letter education keep.', 'sum_amount': 58508}
+{'name': 'They mention eight nature.', 'sum_amount': 28627}
+{'name': 'Small others pull push feeling seek.', 'sum_amount': 53331}
+{'name': 'Guy six culture attention.', 'sum_amount': 184651}
+{'name': 'Nordearth', 'sum_amount': 1310}
+{'name': 'When window when pull.', 'sum_amount': 47119}
+{'name': 'Space trial yourself.', 'sum_amount': 70727}
+{'name': 'Least nation blue fine kind gas once.', 'sum_amount': 158907}
+{'name': 'Want agree friend film free.', 'sum_amount': 42269}
+{'name': 'Agroculture', 'sum_amount': 22520}
+{'name': 'Bacaleatorg', 'sum_amount': 800}
+{'name': 'Guess one put become give.', 'sum_amount': 180633}
+{'name': 'Sure seek three.', 'sum_amount': 178903}
+{'name': 'Tough common themselves four.', 'sum_amount': 42272}
+{'name': 'Range meeting officer.', 'sum_amount': 73609}
+{'name': 'Another level across better long.', 'sum_amount': 32947}
+{'name': 'Teacher large contain discover option.', 'sum_amount': 48984}
+{'name': 'Amount like long sure benefit.', 'sum_amount': 2679}
+{'name': 'Program air past Mrs strategy may.', 'sum_amount': 93437}
+{'name': 'Milk Ko', 'sum_amount': 1320}
+{'name': 'Brother gun quite stuff.', 'sum_amount': 146741}
+{'name': 'Color gas along offer.', 'sum_amount': 140754}
+{'name': 'None character answer debate.', 'sum_amount': 1883}
+{'name': 'Selpo', 'sum_amount': 1820}
+{'name': 'She itself recently store.', 'sum_amount': 30115}
+{'name': 'Fact behind resource hear.', 'sum_amount': 136172}
+{'name': 'Real far meeting station once line all.', 'sum_amount': 110681}
+{'name': 'Prove letter choose manager hand major.', 'sum_amount': 127688}
+{'name': 'Ball manager old role.', 'sum_amount': 95601}
+{'name': 'Position here despite.', 'sum_amount': 109605}
+{'name': 'Health on college husband.', 'sum_amount': 68182}
+{'name': 'Worker drop fall young money run.', 'sum_amount': 47678}
+{'name': 'Because myself seem school fear.', 'sum_amount': 162444}
+{'name': 'Euroopt', 'sum_amount': 21800}
+{'name': 'Think effect last operation country.', 'sum_amount': 11647}
+{'name': 'Father us firm worry month owner out.', 'sum_amount': 60802}
+{'name': 'Makro', 'sum_amount': 800}
+{'name': 'Similar expect charge wonder war.', 'sum_amount': 69790}
+{'name': 'Mission rather owner seven my.', 'sum_amount': 112988}
+{'name': 'Point do debate.', 'sum_amount': 25773}
+{'name': 'Understand fill cultural interest.', 'sum_amount': 3250}
+{'name': 'World medical official key per price.', 'sum_amount': 119809}
+{'name': 'We arm side.', 'sum_amount': 68671}
+{'name': 'Weight his management debate go bill.', 'sum_amount': 82578}
+{'name': 'Wish health already media information.', 'sum_amount': 74975}
+{'name': 'Senior air town rich.', 'sum_amount': 21664}
+{'name': 'Simple pressure hundred test spend.', 'sum_amount': 2479}
+{'name': 'Lidl', 'sum_amount': 42280}
+{'name': 'Through north wait.', 'sum_amount': 95654}
+{'name': 'Art sign ball mission way.', 'sum_amount': 67364}
+{'name': 'Red plan star notice.', 'sum_amount': 128147}
+{'name': 'Test quality born answer gas.', 'sum_amount': 37313}
+{'name': 'According significant turn.', 'sum_amount': 84835}
+{'name': 'Subject deal area have sea.', 'sum_amount': 120964}
+{'name': 'SeniorBan', 'sum_amount': 21080}
+{'name': 'Babushkina Krinka', 'sum_amount': 1100}
+{'name': 'Good Fruit Ko', 'sum_amount': 43000}
+{'name': 'Discuss key visit success recently man.', 'sum_amount': 89745}
+{'name': 'Blood me itself ten take moment care.', 'sum_amount': 56715}
+{'name': 'Green', 'sum_amount': 42280}
+{'name': 'Audience investment force full manager.', 'sum_amount': 145468}
+{'name': 'Pressure eat off imagine into time.', 'sum_amount': 25305}
+{'name': 'Way paper affect follow dream.', 'sum_amount': 151490}
+{'name': 'Meeting suddenly job family.', 'sum_amount': 138302}
+{'name': 'Agree amount foot community lot air.', 'sum_amount': 78286}
+{'name': 'By defense care.', 'sum_amount': 127235}
+{'name': 'Safe after contain yeah kind.', 'sum_amount': 1353}
+{'name': 'Hospital defense force.', 'sum_amount': 77093}
+{'name': 'Don Sauvignon', 'sum_amount': 320}
+{'name': 'Day more hot form.', 'sum_amount': 78799}
+{'name': 'Whom board million board want per.', 'sum_amount': 111620}
+{'name': 'Culture describe medical one describe.', 'sum_amount': 18965}
+{'name': 'BananaCity', 'sum_amount': 9200}
+{'name': 'Technology property plant final.', 'sum_amount': 106077}
+{'name': 'Light City', 'sum_amount': 800}
+{'name': 'No staff leg out nothing heart perform.', 'sum_amount': 92651}
+{'name': 'They through value herself wear.', 'sum_amount': 114680}
+{'name': 'Bedronka', 'sum_amount': 42080}
+{'name': 'Now himself take run hot her pretty.', 'sum_amount': 46730}
+{'name': 'Generation number sound only.', 'sum_amount': 54499}
+{'name': 'Give run child continue.', 'sum_amount': 148571}
+{'name': 'Cup member value try exactly.', 'sum_amount': 72979}
+{'name': 'Too picture at oil leader.', 'sum_amount': 39516}
+{'name': 'Week career check and.', 'sum_amount': 113977}
+{'name': 'Environmental size foreign husband.', 'sum_amount': 65248}
+{'name': 'Industry heavy smile hear.', 'sum_amount': 72366}
+
+
+
+In [116]: avg_prices = Vendor.objects.values("name").annotate(avg_price = Avg("product__price"))
+
+In [117]: for avg_pr in avg_prices:
+     ...:     print(avg_pr)
+     ...: 
+SELECT "ecoshop_person"."name",
+       AVG("ecoshop_product"."price") AS "avg_price"
+  FROM "ecoshop_vendor"
+ INNER JOIN "ecoshop_person"
+    ON ("ecoshop_vendor"."person_ptr_id" = "ecoshop_person"."id")
+  LEFT OUTER JOIN "ecoshop_person_product"
+    ON ("ecoshop_person"."id" = "ecoshop_person_product"."person_id")
+  LEFT OUTER JOIN "ecoshop_product"
+    ON ("ecoshop_person_product"."product_id" = "ecoshop_product"."id")
+ GROUP BY "ecoshop_person"."name"
+
+Execution time: 0.005148s [Database: default]
+{'name': 'To possible describe room I left.', 'avg_price': 0.409521327728505}
+{'name': 'Should TV Republican ok.', 'avg_price': 0.3719753835712142}
+{'name': 'Mission strategy debate she lead.', 'avg_price': 0.6253302954628353}
+{'name': 'Whole well field east five war final.', 'avg_price': 0.0344883191580575}
+{'name': 'Trial include article number.', 'avg_price': 0.48727562176655576}
+{'name': 'Bill help any worker visit.', 'avg_price': 0.38210784008565046}
+{'name': 'Picture foreign whom hotel success.', 'avg_price': 0.2873258889996831}
+{'name': 'Citizen research TV too most green.', 'avg_price': 0.5272235132790636}
+{'name': 'White and Red', 'avg_price': 83.51666666666667}
+{'name': 'Finally catch tend.', 'avg_price': 0.6247830313474214}
+{'name': 'Speak former common finish.', 'avg_price': 0.5897888743887324}
+{'name': 'MeatPiece', 'avg_price': 26.764285714285712}
+{'name': 'Myself article management radio.', 'avg_price': 0.35590907154697715}
+{'name': 'Remain dinner whose.', 'avg_price': 0.5146220544205741}
+{'name': 'Lead direction change.', 'avg_price': 0.49027606944294283}
+{'name': 'Cover responsibility play.', 'avg_price': 0.4080813072881378}
+{'name': 'Woman course court rise.', 'avg_price': 0.450261067165724}
+{'name': 'Exist term debate.', 'avg_price': 0.46090645269232}
+{'name': 'Consider little begin water when up.', 'avg_price': 0.31433186082583725}
+{'name': 'Seafood', 'avg_price': 31.9375}
+{'name': 'Person mission line him far character.', 'avg_price': 0.5337910660947368}
+{'name': 'Place leader mouth.', 'avg_price': 0.7308107238355331}
+{'name': 'Training within people minute same.', 'avg_price': 0.6053043586409859}
+{'name': 'Agree walk what occur central force.', 'avg_price': 0.5744279435286007}
+{'name': 'Particular any none perform early.', 'avg_price': 0.5344538117504031}
+{'name': 'Enter glass during.', 'avg_price': 0.4502134925412221}
+{'name': 'Use point hear she.', 'avg_price': 0.4071171766129848}
+{'name': 'Glass middle country response of name.', 'avg_price': 0.6780964084812753}
+{'name': 'Hair leg each per candidate others.', 'avg_price': 0.8903559595355787}
+{'name': 'Raise allow fish home society hand.', 'avg_price': 0.4058111362045536}
+{'name': 'Peace yet character west.', 'avg_price': 0.35650522254872313}
+{'name': 'Air road different price.', 'avg_price': 0.7889704884568488}
+{'name': 'Magnit', 'avg_price': 19.49285714285714}
+{'name': 'Rich much safe discover.', 'avg_price': 0.37627902415128295}
+{'name': 'According lead letter education keep.', 'avg_price': 0.3564864410757216}
+{'name': 'They mention eight nature.', 'avg_price': 0.5645717215824385}
+{'name': 'Small others pull push feeling seek.', 'avg_price': 0.47586536221497644}
+{'name': 'Guy six culture attention.', 'avg_price': 0.44023980903636406}
+{'name': 'Nordearth', 'avg_price': 89.03333333333333}
+{'name': 'When window when pull.', 'avg_price': 0.3577638648955109}
+{'name': 'Space trial yourself.', 'avg_price': 0.2933191967756267}
+{'name': 'Least nation blue fine kind gas once.', 'avg_price': 0.5677251198718968}
+{'name': 'Want agree friend film free.', 'avg_price': 0.4900411056819262}
+{'name': 'Agroculture', 'avg_price': 10.345000000000002}
+{'name': 'Bacaleatorg', 'avg_price': 19.525}
+{'name': 'Guess one put become give.', 'avg_price': 0.47941390357674163}
+{'name': 'Sure seek three.', 'avg_price': 0.454916720959541}
+{'name': 'Tough common themselves four.', 'avg_price': 0.6567155157837253}
+{'name': 'Range meeting officer.', 'avg_price': 0.24388827542457156}
+{'name': 'Another level across better long.', 'avg_price': 0.4692286152862695}
+{'name': 'Teacher large contain discover option.', 'avg_price': 0.5804338952005764}
+{'name': 'Amount like long sure benefit.', 'avg_price': 0.8748950936629311}
+{'name': 'Program air past Mrs strategy may.', 'avg_price': 0.6380717677449301}
+{'name': 'Milk Ko', 'avg_price': 13.535714285714286}
+{'name': 'Brother gun quite stuff.', 'avg_price': 0.42279723379350836}
+{'name': 'Color gas along offer.', 'avg_price': 0.5241839269434587}
+{'name': 'None character answer debate.', 'avg_price': 0.7213817875994575}
+{'name': 'Selpo', 'avg_price': 78.74444444444445}
+{'name': 'She itself recently store.', 'avg_price': 0.28087411189324646}
+{'name': 'Fact behind resource hear.', 'avg_price': 0.6091169626129671}
+{'name': 'Real far meeting station once line all.', 'avg_price': 0.5206883122462954}
+{'name': 'Prove letter choose manager hand major.', 'avg_price': 0.5747117355080302}
+{'name': 'Ball manager old role.', 'avg_price': 0.34866208450967284}
+{'name': 'Position here despite.', 'avg_price': 0.425809800436061}
+{'name': 'Health on college husband.', 'avg_price': 0.4132469609323947}
+{'name': 'Worker drop fall young money run.', 'avg_price': 0.02497197602977841}
+{'name': 'Because myself seem school fear.', 'avg_price': 0.4573975312151226}
+{'name': 'Euroopt', 'avg_price': 61.05833333333334}
+{'name': 'Think effect last operation country.', 'avg_price': 0.016278156152725876}
+{'name': 'Father us firm worry month owner out.', 'avg_price': 0.344733528684565}
+{'name': 'Makro', 'avg_price': 19.525}
+{'name': 'Similar expect charge wonder war.', 'avg_price': 0.4904505123026096}
+{'name': 'Mission rather owner seven my.', 'avg_price': 0.5193869041821725}
+{'name': 'Point do debate.', 'avg_price': 0.8269256932594022}
+{'name': 'Understand fill cultural interest.', 'avg_price': 0.7546526692848905}
+{'name': 'World medical official key per price.', 'avg_price': 0.5101505462835483}
+{'name': 'We arm side.', 'avg_price': 0.6548018337523523}
+{'name': 'Weight his management debate go bill.', 'avg_price': 0.5063077289270547}
+{'name': 'Wish health already media information.', 'avg_price': 0.40629285500829254}
+{'name': 'Senior air town rich.', 'avg_price': 0.5427091876422803}
+{'name': 'Simple pressure hundred test spend.', 'avg_price': 0.6825843004134743}
+{'name': 'Lidl', 'avg_price': 6.784999999999999}
+{'name': 'Through north wait.', 'avg_price': 0.4446385598176527}
+{'name': 'Art sign ball mission way.', 'avg_price': 0.4868032867528791}
+{'name': 'Red plan star notice.', 'avg_price': 0.5732194590946215}
+{'name': 'Test quality born answer gas.', 'avg_price': 0.5171635718117573}
+{'name': 'According significant turn.', 'avg_price': 0.6138520363616046}
+{'name': 'Subject deal area have sea.', 'avg_price': 0.5494571806367174}
+{'name': 'SeniorBan', 'avg_price': 8.450000000000001}
+{'name': 'Babushkina Krinka', 'avg_price': 8.7875}
+{'name': 'Good Fruit Ko', 'avg_price': 49.42666666666666}
+{'name': 'Discuss key visit success recently man.', 'avg_price': 0.575247055282978}
+{'name': 'Blood me itself ten take moment care.', 'avg_price': 0.5543224900224923}
+{'name': 'Green', 'avg_price': 6.784999999999999}
+{'name': 'Audience investment force full manager.', 'avg_price': 0.2858033135491421}
+{'name': 'Pressure eat off imagine into time.', 'avg_price': 0.6843752388117045}
+{'name': 'Way paper affect follow dream.', 'avg_price': 0.531237660722676}
+{'name': 'Meeting suddenly job family.', 'avg_price': 0.5536163144654103}
+{'name': 'Agree amount foot community lot air.', 'avg_price': 0.46746048803244894}
+{'name': 'By defense care.', 'avg_price': 0.4958373084350035}
+{'name': 'Safe after contain yeah kind.', 'avg_price': 0.1962163928581343}
+{'name': 'Hospital defense force.', 'avg_price': 0.40411013318998784}
+{'name': 'Don Sauvignon', 'avg_price': 195.86666666666667}
+{'name': 'Day more hot form.', 'avg_price': 0.4395843691941893}
+{'name': 'Whom board million board want per.', 'avg_price': 0.5476797389146582}
+{'name': 'Culture describe medical one describe.', 'avg_price': 0.5252569633561471}
+{'name': 'BananaCity', 'avg_price': 6.766666666666667}
+{'name': 'Technology property plant final.', 'avg_price': 0.48567375150890957}
+{'name': 'Light City', 'avg_price': 19.525}
+{'name': 'No staff leg out nothing heart perform.', 'avg_price': 0.4029183363092938}
+{'name': 'They through value herself wear.', 'avg_price': 0.3281005346525109}
+{'name': 'Bedronka', 'avg_price': 6.616666666666666}
+{'name': 'Now himself take run hot her pretty.', 'avg_price': 0.3138994558971967}
+{'name': 'Generation number sound only.', 'avg_price': 0.44465976859671896}
+{'name': 'Give run child continue.', 'avg_price': 0.3998653320996728}
+{'name': 'Cup member value try exactly.', 'avg_price': 0.587685055066299}
+{'name': 'Too picture at oil leader.', 'avg_price': 0.45321390749823753}
+{'name': 'Week career check and.', 'avg_price': 0.471306488230627}
+{'name': 'Environmental size foreign husband.', 'avg_price': 0.4527223945443444}
+{'name': 'Industry heavy smile hear.', 'avg_price': 0.520984024590488}
+
+
+
+8)	Получить общее количество продуктов и среднее количество отзывов для каждого постващика:
+
+Общее количество продуктов см. п.7
+
+In [104]: Vendor.objects.annotate(num_reviews = Count("vendorreviews")).aggregate(Avg("num_reviews"))
+SELECT AVG("num_reviews")
+  FROM (
+        SELECT COUNT("ecoshop_vendorreviews"."id") AS "num_reviews"
+          FROM "ecoshop_vendor"
+          LEFT OUTER JOIN "ecoshop_vendorreviews"
+            ON ("ecoshop_vendor"."person_ptr_id" = "ecoshop_vendorreviews"."vendor_id")
+         GROUP BY "ecoshop_vendor"."person_ptr_id"
+       ) subquery
+
+Execution time: 0.009089s [Database: default]
+Out[104]: {'num_reviews__avg': 0.025}
+
+
+9)	*Получить среднее количество продуктов для каждой категории, а также суммарное количество отзывов для продуктов каждой категории:
+
+In [129]: avg_amount = Product.objects.values("category").annotate(avg_amount = Avg("amount"))
+
+In [131]: for avg_am in avg_amount:
+     ...:     print(avg_am)
+     ...: 
+SELECT "ecoshop_product"."category",
+       AVG("ecoshop_product"."amount") AS "avg_amount"
+  FROM "ecoshop_product"
+ GROUP BY "ecoshop_product"."category"
+
+Execution time: 0.025009s [Database: default]
+{'category': 'AL', 'avg_amount': 16427.33073629536}
+{'category': 'FS', 'avg_amount': 16317.431766543596}
+{'category': 'ML', 'avg_amount': 16286.489812832378}
+{'category': 'MT', 'avg_amount': 16281.884984692459}
+{'category': 'FR', 'avg_amount': 16321.666248693835}
+{'category': 'TC', 'avg_amount': 16376.032389517319}
+{'category': 'VG', 'avg_amount': 16448.26626928471}
+
+In [132]: sum_reviews = Product.objects.values("category").annotate(sum_reviews = Sum("productreviews"))
+
+In [133]: for sum_rev in sum_reviews:
+     ...:     print(sum_rev)
+     ...: 
+SELECT "ecoshop_product"."category",
+       SUM("ecoshop_productreviews"."id") AS "sum_reviews"
+  FROM "ecoshop_product"
+  LEFT OUTER JOIN "ecoshop_productreviews"
+    ON ("ecoshop_product"."id" = "ecoshop_productreviews"."product_id")
+ GROUP BY "ecoshop_product"."category"
+
+Execution time: 0.034982s [Database: default]
+{'category': 'AL', 'sum_reviews': Decimal('22')}
+{'category': 'FS', 'sum_reviews': Decimal('7')}
+{'category': 'ML', 'sum_reviews': Decimal('44')}
+{'category': 'MT', 'sum_reviews': Decimal('25')}
+{'category': 'FR', 'sum_reviews': Decimal('70')}
+{'category': 'TC', 'sum_reviews': Decimal('3')}
+{'category': 'VG', 'sum_reviews': Decimal('39')}
+
+10)	*Получить общее количество продуктов для каждого поставщика и среднее количество отзывов для продуктов каждого поставщика:
+
+Общее количество продуктов см. п.7
+
+In [167]: avg_reviews = Vendor.objects.values("name").annotate(avg_reviews = Avg("product__productreviews")).filter(avg_reviews__gte=1)
+
+In [168]: for avg_rev in avg_reviews:
+     ...:     print(avg_rev)
+     ...: 
+SELECT "ecoshop_person"."name",
+       AVG("ecoshop_productreviews"."id") AS "avg_reviews"
+  FROM "ecoshop_vendor"
+ INNER JOIN "ecoshop_person"
+    ON ("ecoshop_vendor"."person_ptr_id" = "ecoshop_person"."id")
+  LEFT OUTER JOIN "ecoshop_person_product"
+    ON ("ecoshop_person"."id" = "ecoshop_person_product"."person_id")
+  LEFT OUTER JOIN "ecoshop_product"
+    ON ("ecoshop_person_product"."product_id" = "ecoshop_product"."id")
+  LEFT OUTER JOIN "ecoshop_productreviews"
+    ON ("ecoshop_product"."id" = "ecoshop_productreviews"."product_id")
+ GROUP BY "ecoshop_person"."name"
+HAVING AVG("ecoshop_productreviews"."id") >= 1.0
+
+Execution time: 0.005001s [Database: default]
+{'name': 'White and Red', 'avg_reviews': 3.5}
+{'name': 'MeatPiece', 'avg_reviews': 7.0}
+{'name': 'Seafood', 'avg_reviews': 7.0}
+{'name': 'Magnit', 'avg_reviews': 8.5}
+{'name': 'Nordearth', 'avg_reviews': 5.5}
+{'name': 'Agroculture', 'avg_reviews': 5.666666666666667}
+{'name': 'Bacaleatorg', 'avg_reviews': 3.0}
+{'name': 'Milk Ko', 'avg_reviews': 3.5}
+{'name': 'Selpo', 'avg_reviews': 3.6666666666666665}
+{'name': 'Euroopt', 'avg_reviews': 5.6}
+{'name': 'Makro', 'avg_reviews': 3.0}
+{'name': 'Lidl', 'avg_reviews': 6.8}
+{'name': 'SeniorBan', 'avg_reviews': 6.0}
+{'name': 'Babushkina Krinka', 'avg_reviews': 3.5}
+{'name': 'Good Fruit Ko', 'avg_reviews': 6.333333333333333}
+{'name': 'Green', 'avg_reviews': 6.8}
+{'name': 'Don Sauvignon', 'avg_reviews': 4.0}
+{'name': 'BananaCity', 'avg_reviews': 7.666666666666667}
+{'name': 'Light City', 'avg_reviews': 3.0}
+{'name': 'Bedronka', 'avg_reviews': 6.8}
+
+

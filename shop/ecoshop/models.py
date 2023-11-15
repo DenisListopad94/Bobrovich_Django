@@ -26,42 +26,16 @@ class Product(models.Model):
         return self.name
 
 
-class Vendor(models.Model):
-    name = models.CharField(max_length=40)
-    address = models.CharField(max_length=40, null=True)
-    email = models.EmailField(null=True)
-    phone = models.CharField(max_length=20, null=True)
-    inn = models.PositiveIntegerField()
-    product = models.ManyToManyField("Product")
-
-    def __str__(self):
-        return self.name
-
-
-class Shipper(models.Model):
+class Person(models.Model):
     name = models.CharField(max_length=40)
     address = models.CharField(max_length=40, null=True)
     email = models.EmailField(null=True)
     phone = models.CharField(max_length=20, null=True)
     product = models.ManyToManyField("Product")
 
-    def __str__(self):
-        return self.name
 
-
-class ReviewsProducts(models.Model):
-    product = models.ForeignKey("Product", on_delete=models.CASCADE)
-    title = models.CharField(max_length=40)
-    descriptions = models.CharField(max_length=300, default="default review")
-    author = models.CharField(max_length=40)
-    review_time = models.DateField(auto_now_add=True)
-
-    def __str__(self):
-        return self.title
-
-
-class PassportShipper(models.Model):
-    shipper = models.OneToOneField("Shipper", on_delete=models.CASCADE)
+class Passport(models.Model):
+    person = models.OneToOneField("Person", on_delete=models.CASCADE)
     passport_number = models.PositiveIntegerField()
     passport_series = models.CharField(max_length=5)
 
@@ -69,17 +43,46 @@ class PassportShipper(models.Model):
         return str(self.passport_number)
 
 
-class VendorRating(models.Model):
+class Vendor(Person):
+    inn = models.PositiveIntegerField()
+
+    def __str__(self):
+        return self.name
+
+
+class Shipper(Person):
+    personal_discont = models.FloatField()
+
+    def __str__(self):
+        return self.name
+
+
+class Reviews(models.Model):
+    title = models.CharField(max_length=40)
+    descriptions = models.CharField(max_length=300, default="default review")
+    author = models.CharField(max_length=40)
+    review_time = models.DateField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
+class ProductReviews(Reviews):
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.title
+
+
+class VendorReviews(Reviews):
     vendor = models.ForeignKey("Vendor", on_delete=models.CASCADE)
-    vendor_rating = models.PositiveIntegerField()
 
     def __str__(self):
-        return str(self.vendor_rating)
+        return self.title
 
 
-class ShipperRating(models.Model):
+class ShipperReviews(Reviews):
     shipper = models.ForeignKey("Shipper", on_delete=models.CASCADE)
-    shipper_rating = models.PositiveIntegerField()
 
     def __str__(self):
-        return str(self.shipper_rating)
+        return self.title

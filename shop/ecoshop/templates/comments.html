@@ -2,6 +2,29 @@
 {% block title %}Comments{% endblock %}
 {% block content %}
 
-<h1> We are in comments page. </h1>
+<h1> We are in comments product page. </h1>
+
+<table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Product</th>
+      <th scope="col">Comment</th>
+      <th scope="col">User</th>
+      <th scope="col">Time reviews</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for comment in comments %}
+    <tr>
+      <th>{{comment.id}}</th>
+      <td>{{comment.product.name}}</td>
+      <td>{{comment.title}}</td>
+      <td>{{comment.author}}</td>
+      <td>{{comment.reviews_time}}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
 
 {% endblock %}
