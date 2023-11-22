@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .models import ProductReviews, Vendor, Shipper
-from django.http import HttpResponse
+from .forms import ProductForm, ShipperReviewsForm, VendorReviewsForm
+from django.http import HttpResponseRedirect
 
 PRODUCTS = {
     "apple": {
@@ -74,3 +75,59 @@ def shippers_info_ecoshop(request):
     }
 
     return render(request, "shippers_info.html", context=context)
+
+
+def create_product_ecoshop(request):
+
+    context = {}
+
+    if request.method == "POST":
+
+        form = ProductForm(request.POST)
+        form.save()
+
+        if form.is_valid():
+            # product = ProductForm(**form.cleaned_data)
+            # product.save()
+            return HttpResponseRedirect("/ecoshop/products/")
+    else:
+        form = ProductForm()
+
+    context["form"] = form
+    return render(request, "create_product.html", context=context)
+
+
+def create_shipperreviews_ecoshop(request):
+
+    context = {}
+
+    if request.method == "POST":
+
+        form = ShipperReviewsForm(request.POST)
+        form.save()
+
+        if form.is_valid():
+            return HttpResponseRedirect("/ecoshop/shippers_info/")
+    else:
+        form = ShipperReviewsForm()
+
+    context["form"] = form
+    return render(request, "create_shipperreviews.html", context=context)
+
+
+def create_vendorreviews_ecoshop(request):
+
+    context = {}
+
+    if request.method == "POST":
+
+        form = VendorReviewsForm(request.POST)
+        form.save()
+
+        if form.is_valid():
+            return HttpResponseRedirect("/ecoshop/vendors_info/")
+    else:
+        form = VendorReviewsForm()
+
+    context["form"] = form
+    return render(request, "create_vendorreviews.html", context=context)

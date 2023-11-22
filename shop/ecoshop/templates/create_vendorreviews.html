@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}new vendor review{% endblock %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<form action="/ecoshop/create_vendorreviews/" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="OK">
+</form>
+
+{% endblock %}
