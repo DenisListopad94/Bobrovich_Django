@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}new shipper review{% endblock %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<form action="/ecoshop/create_shipperreviews/" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <input type="submit" value="OK">
+</form>
+
+{% endblock %}

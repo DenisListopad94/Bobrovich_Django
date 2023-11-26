@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}new product{% endblock %}
+{% block content %}
+{% load crispy_forms_tags %}
+
+<form action="/ecoshop/create_product/" method="POST">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+<!--    <label for="product_name">Your product name: </label>-->
+<!--    <input id="product_name" type="text" name="product_name">-->
+
+<!--    <label for="description">description: </label>-->
+<!--    <input id="description" type="text" name="description">-->
+
+<!--    <label for="price">price: </label>-->
+<!--    <input id="price" type="text" name="price">-->
+
+<!--    <label for="amount">amount: </label>-->
+<!--    <input id="amount" type="text" name="amount">-->
+
+<!--    <label for="delivery_date">delivery_date: </label>-->
+<!--    <input id="delivery_date" type="text" name="delivery_date">-->
+
+<!--    <label for="category">category: </label>-->
+<!--    <input id="category" type="text" name="category">-->
+
+    <input type="submit" value="OK">
+</form>
+
+{% endblock %}

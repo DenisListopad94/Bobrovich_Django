@@ -1,4 +1,6 @@
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 CATEGORY = [
     ("FR", "Fruit"),
@@ -11,16 +13,28 @@ CATEGORY = [
 ]
 
 
+def validate_max_price(price):
+    if price > 1000000:
+        raise ValidationError(
+            _("%(price) is more then max price"),
+            params={"price": price},
+        )
+
+
 class Product(models.Model):
-    name = models.CharField(max_length=20)
-    description = models.CharField(max_length=100, default="perfect product")
-    price = models.FloatField()
-    amount = models.PositiveIntegerField()
-    delivery_date = models.DateField(auto_now_add=True)
+    name = models.CharField(max_length=20, verbose_name="наименование")
+    description = models.CharField(max_length=100, default="perfect product", verbose_name="описание")
+    price = models.FloatField(validators=[validate_max_price], verbose_name="цена")
+    amount = models.PositiveIntegerField(verbose_name="количество")
+    delivery_date = models.DateField(auto_now_add=True, verbose_name="дата поставки")
     category = models.CharField(
         max_length=2,
-        choices=CATEGORY
+        choices=CATEGORY,
+        verbose_name="категория"
     )
+
+    class Meta:
+        verbose_name_plural = "Продукты"
 
     def __str__(self):
         return self.name
