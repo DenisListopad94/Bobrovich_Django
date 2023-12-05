@@ -40,9 +40,11 @@ INSTALLED_APPS = [
     'debug_toolbar',
     'django_extensions',
     'ecoshop.apps.EcoshopConfig',
+    'ecoshop_api.apps.EcoshopApiConfig',
     'django_seed',
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
