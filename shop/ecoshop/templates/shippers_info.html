@@ -2,6 +2,9 @@
 {% block title %}Shippers_info{% endblock %}
 {% block content %}
 
+{% load cache %}
+{% cache 1200 None %}
+
 <h1> We are in shippers_info page. </h1>
 
 <table class="table">
@@ -28,5 +31,7 @@
   {% endfor %}
   </tbody>
 </table>
+
+{% endcache %}
 
 {% endblock %}

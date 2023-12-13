@@ -1,3 +1,5 @@
+from django.utils.safestring import mark_safe
+
 from .models import Product, Vendor, Shipper, ProductReviews, VendorReviews, ShipperReviews, Passport, Person
 from django.contrib import admin
 
@@ -29,8 +31,14 @@ class PersonAdmin(admin.ModelAdmin):
     filter_horizontal = ["product"]
 
 
+@admin.display(description='фото')
+def get_html_photo(objects):
+    if objects.photo:
+        return mark_safe(f'<img src={objects.photo.url} width=50>')
+
+
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ["name", "price", "amount", "category"]
+    list_display = ["name", "price", "amount", "category", get_html_photo]
     list_filter = ["category"]
 
     inlines = [

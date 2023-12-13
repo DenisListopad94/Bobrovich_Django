@@ -1,7 +1,10 @@
+from django.core.cache import caches
+from django.core.paginator import Paginator
 from django.shortcuts import render
-from .models import ProductReviews, Vendor, Shipper
+from .models import ProductReviews, Vendor, Shipper, Product
 from .forms import ProductForm, ShipperReviewsForm, VendorReviewsForm
 from django.http import HttpResponseRedirect
+from django.views.decorators.cache import cache_page
 
 PRODUCTS = {
     "apple": {
@@ -35,12 +38,23 @@ def info_ecoshop(request, address):
     return render(request, "info.html", context=context)
 
 
+@cache_page(60 * 30, cache="per_view_cache")
 def products_ecoshop(request):
-    return render(request, "products.html")
+    import time
+    time.sleep(10)
+    products = Product.objects.all()
+    paginator = Paginator(products, 10)
+
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+    return render(request, "products.html", {"page_obj": page_obj})
 
 
+@cache_page(60 * 10, cache="redis_cache")
 def comments_ecoshop(request):
-    comments = ProductReviews.objects.select_related("product").all
+    import time
+    time.sleep(10)
+    comments = ProductReviews.objects.select_related("product").all()
 
     context = {
         "comments": comments
@@ -58,7 +72,7 @@ def products_catalog(request):
 
 
 def vendors_info_ecoshop(request):
-    vendors = Vendor.objects.prefetch_related("product").all#prefetch_related("vendor__vendorreviews_set").
+    vendors = Vendor.objects.prefetch_related("product").all()#prefetch_related("vendor__vendorreviews_set").
 
     context = {
         "vendors": vendors
@@ -68,7 +82,7 @@ def vendors_info_ecoshop(request):
 
 
 def shippers_info_ecoshop(request):
-    shippers = Shipper.objects.prefetch_related("product").all#prefetch_related("shipper__shipperreviews_set").
+    shippers = Shipper.objects.prefetch_related("product").all()#prefetch_related("shipper__shipperreviews_set").
 
     context = {
         "shippers": shippers
@@ -85,6 +99,7 @@ def create_product_ecoshop(request):
 
         form = ProductForm(request.POST)
         form.save()
+        caches["per_view_cache"].clear()
 
         if form.is_valid():
             # product = ProductForm(**form.cleaned_data)

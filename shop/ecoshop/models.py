@@ -27,6 +27,7 @@ class Product(models.Model):
     price = models.FloatField(validators=[validate_max_price], verbose_name="цена")
     amount = models.PositiveIntegerField(verbose_name="количество")
     delivery_date = models.DateField(auto_now_add=True, verbose_name="дата поставки")
+    photo = models.ImageField(upload_to="products", verbose_name="картинки", null=True, blank=True)
     category = models.CharField(
         max_length=2,
         choices=CATEGORY,
